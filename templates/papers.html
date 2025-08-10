@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Latest AI Papers</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        h1 { color: #333; }
+        ul { list-style-type: none; padding-left: 0; }
+        li.paper { margin-bottom: 40px; }
+        li.feedback { margin-left: 20px; font-style: italic; color: #555; }
+        form { margin-top: 10px; }
+        input[type="text"] { margin-right: 10px; }
+        button { padding: 5px 10px; }
+        p.summary { font-style: italic; color: #666; margin: 8px 0 12px 0; max-width: 700px; }
+    </style>
+</head>
+<body>
+    <h1>Latest AI Papers from arXiv</h1>
+
+    <form method="get" action="/papers" style="margin-bottom: 20px;">
+        <input type="text" name="search" placeholder="Search papers..." value="{{ search_query }}">
+        <select name="category">
+            <option value="">All Categories</option>
+            <option value="NLP" {% if category_filter == 'NLP' %}selected{% endif %}>NLP</option>
+            <option value="Robotics" {% if category_filter == 'Robotics' %}selected{% endif %}>Robotics</option>
+            <option value="ML" {% if category_filter == 'ML' %}selected{% endif %}>Machine Learning</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <ul>
+        {% for paper in papers %}
+        <li class="paper">
+            <a href="{{ paper.link }}" target="_blank"><strong>{{ paper.title }}</strong></a>
+            <p class="summary">{{ paper.summary }}</p>
+            <form method="post">
+                <input type="hidden" name="paper_title" value="{{ paper.title }}">
+                Your name: <input type="text" name="user_name" required>
+                Comment: <input type="text" name="comment" required>
+                <button type="submit">Submit Feedback</button>
+            </form>
+            <ul>
+                {% if paper.title in feedbacks %}
+                    {% for fb in feedbacks[paper.title] %}
+                        <li class="feedback"><strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        {% if page > 1 %}
+            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page - 1 }}">Previous</a>
+        {% endif %}
+        <span> Page {{ page }} of {{ total_pages }} </span>
+        {% if page < total_pages %}
+            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page + 1 }}">Next</a>
+        {% endif %}
+    </div>
+</body>
+</html>
