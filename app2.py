@@ -139,6 +139,10 @@ def papers_list():
                            total_pages=total_pages,
                            search_query=search_query,
                            category_filter=category_filter)
+#define the url route for the function route
+@app.route('/')
+def home():
+	return redirect(url_for('papers_list'))
 
 if __name__ == '__main__':
     app.run(debug=True)
