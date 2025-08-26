@@ -1,7 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 <head>
     <title>AI/ML Research Dashboard</title>
+
+    <!-- ✅ Add this line for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
     <style>
         body { font-family: Arial, sans-serif; margin: 30px; }
         h1 { color: #333; }
@@ -15,22 +19,25 @@
     </style>
 </head>
 <body>
-    <h1>Latest AI Papers from arXiv</h1>
+    <h1><i class="fas fa-brain"></i> Latest AI Papers from arXiv</h1> <!-- Example with brain icon -->
+
     <ul>
         {% for paper in papers %}
         <li class="paper">
-            <a href="{{ paper.link }}" target="_blank"><strong>{{ paper.title }}</strong></a>
+            <a href="{{ paper.link }}" target="_blank">
+                <i class="fas fa-file-alt"></i> <strong>{{ paper.title }}</strong>
+            </a>
             <p class="summary">{{ paper.summary }}</p>
             <form method="post">
                 <input type="hidden" name="paper_title" value="{{ paper.title }}">
-                Your name: <input type="text" name="user_name" required>
-                Comment: <input type="text" name="comment" required>
-                <button type="submit">Submit Feedback</button>
+                <i class="fas fa-user"></i> Your name: <input type="text" name="user_name" required>
+                <i class="fas fa-comment"></i> Comment: <input type="text" name="comment" required>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
             </form>
             <ul>
                 {% if paper.title in feedbacks %}
                     {% for fb in feedbacks[paper.title] %}
-                        <li class="feedback"><strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
+                        <li class="feedback"><i class="fas fa-reply"></i> <strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
                     {% endfor %}
                 {% endif %}
             </ul>
