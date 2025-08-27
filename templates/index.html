@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <h1><i class="fas fa-brain"></i> Latest AI Papers from arXiv</h1> <!-- Example with brain icon -->
+    <h1><i class="fas fa-brain"></i> Latest AI Papers from arXiv</h1>
 
     <ul>
         {% for paper in papers %}
@@ -32,12 +32,12 @@
                 <input type="hidden" name="paper_title" value="{{ paper.title }}">
                 <i class="fas fa-user"></i> Your name: <input type="text" name="user_name" required>
                 <i class="fas fa-comment"></i> Comment: <input type="text" name="comment" required>
-                <button type="submit"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+                <button type="submit"><i class="fas fa-comment-dots"></i> Feedback</button>
             </form>
             <ul>
                 {% if paper.title in feedbacks %}
                     {% for fb in feedbacks[paper.title] %}
-                        <li class="feedback"><i class="fas fa-reply"></i> <strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
+                        <li class="feedback"><i class="fas fa-comment-dots"></i> <strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
                     {% endfor %}
                 {% endif %}
             </ul>

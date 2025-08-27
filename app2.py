@@ -5,6 +5,7 @@ import requests
 import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True # <--auto-reload templates
 
 # ---------------------------------
 # Database Setup
@@ -145,4 +146,4 @@ def home():
 	return redirect(url_for('papers_list'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)  #auto reload in Python code local server
