@@ -47,6 +47,7 @@ Homepage with Papers
 Feedback Form Example
 
 Images (1).txt 
+Images (2).txt
 
 🔮 ***Future Improvements***
 
