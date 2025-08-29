@@ -42,11 +42,9 @@ Navigate through pages using pagination controls.
 
 📸 ***Screenshots***
 
-Homepage with Papers
-
-Feedback Form Example
-
+**Homepage with Papers**
 Images (1).txt 
+**Feedback Form Example**
 Images (2).txt
 
 🔮 ***Future Improvements***
