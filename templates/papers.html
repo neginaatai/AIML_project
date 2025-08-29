@@ -2,6 +2,10 @@
 <html>
 <head>
     <title>Latest AI Papers</title>
+
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
     <style>
         body { font-family: Arial, sans-serif; margin: 30px; }
         h1 { color: #333; }
@@ -12,12 +16,15 @@
         input[type="text"] { margin-right: 10px; }
         button { padding: 5px 10px; }
         p.summary { font-style: italic; color: #666; margin: 8px 0 12px 0; max-width: 700px; }
+        .filter-form { margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <h1>Latest AI Papers from arXiv</h1>
+    <h1><i class="fas fa-brain"></i> Latest AI Papers from arXiv</h1>
 
-    <form method="get" action="/papers" style="margin-bottom: 20px;">
+    <!-- Search & Filter Form -->
+    <form method="get" action="/papers" class="filter-form">
+        <i class="fas fa-search"></i>
         <input type="text" name="search" placeholder="Search papers..." value="{{ search_query }}">
         <select name="category">
             <option value="">All Categories</option>
@@ -25,24 +32,28 @@
             <option value="Robotics" {% if category_filter == 'Robotics' %}selected{% endif %}>Robotics</option>
             <option value="ML" {% if category_filter == 'ML' %}selected{% endif %}>Machine Learning</option>
         </select>
-        <button type="submit">Filter</button>
+        <button type="submit"><i class="fas fa-filter"></i> Filter</button>
     </form>
 
     <ul>
         {% for paper in papers %}
         <li class="paper">
-            <a href="{{ paper.link }}" target="_blank"><strong>{{ paper.title }}</strong></a>
+            <a href="{{ paper.link }}" target="_blank"><i class="fas fa-file-alt"></i> <strong>{{ paper.title }}</strong></a>
             <p class="summary">{{ paper.summary }}</p>
+
+            <!-- Feedback Form -->
             <form method="post">
                 <input type="hidden" name="paper_title" value="{{ paper.title }}">
-                Your name: <input type="text" name="user_name" required>
-                Comment: <input type="text" name="comment" required>
-                <button type="submit">Submit Feedback</button>
+                <i class="fas fa-user"></i> Your name: <input type="text" name="user_name" required>
+                <i class="fas fa-comment"></i> Comment: <input type="text" name="comment" required>
+                <button type="submit"><i class="fas fa-comment-dots"></i> Submit Feedback</button>
             </form>
+
+            <!-- Display Feedback -->
             <ul>
                 {% if paper.title in feedbacks %}
                     {% for fb in feedbacks[paper.title] %}
-                        <li class="feedback"><strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
+                        <li class="feedback"><i class="fas fa-comment-dots"></i> <strong>{{ fb.user_name }}:</strong> {{ fb.comment_text }}</li>
                     {% endfor %}
                 {% endif %}
             </ul>
@@ -50,13 +61,14 @@
         {% endfor %}
     </ul>
 
+    <!-- Pagination -->
     <div>
         {% if page > 1 %}
-            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page - 1 }}">Previous</a>
+            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page - 1 }}"><i class="fas fa-arrow-left"></i> Previous</a>
         {% endif %}
         <span> Page {{ page }} of {{ total_pages }} </span>
         {% if page < total_pages %}
-            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page + 1 }}">Next</a>
+            <a href="?search={{ search_query }}&category={{ category_filter }}&page={{ page + 1 }}">Next <i class="fas fa-arrow-right"></i></a>
         {% endif %}
     </div>
 </body>
