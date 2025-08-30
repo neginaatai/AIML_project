@@ -4,11 +4,11 @@ AI/ML Research Dashboard is a fully deployed web application that fetches and di
 Users can search, filter, browse, and submit feedback on papers through a clean, interactive interface enhanced with icons.
 Built with Python Flask and deployed on Render, this project demonstrates full-stack development skills and real-world functionality.
 
-🌐 ***Live Demo***
+ ***Live Demo***
 
 The project is deployed and live on Render: View Live App https://learnershdashboard.onrender.com/papers
 
-✨ ***Features***
+ ***Features***
 
 Display AI/ML papers with title, summary, and link.
 
@@ -22,7 +22,7 @@ Submit feedback for each paper with name and comment.
 
 Font Awesome icons for improved UI/UX.
 
-🛠 ***Tech Stack***
+ ***Tech Stack***
 
 Backend: Python, Flask
 
@@ -30,7 +30,7 @@ Frontend: HTML, CSS, Font Awesome
 
 Deployment: Render
 
-🚀 ***Usage***
+ ***Usage***
 
 Visit the live app via the Render link above.
 
@@ -40,7 +40,7 @@ Submit feedback for any paper — comments appear instantly below the paper.
 
 Navigate through pages using pagination controls.
 
-📸 ***Screenshots***
+ ***Screenshots***
 
 **Homepage with Papers**
 
@@ -50,7 +50,7 @@ Images (1).txt
 
 Images (2).txt
 
-🔮 ***Future Improvements***
+ ***Future Improvements***
 
 Store feedback in a database for permanent storage.
 
@@ -60,7 +60,7 @@ Add user authentication for secure feedback management.
 
 Include paper recommendation features based on user interactions.
 
-🌟 ***Why This Project Stands Out***
+ ***Why This Project Stands Out***
 
 Demonstrates full-stack development skills using Python Flask.
 
