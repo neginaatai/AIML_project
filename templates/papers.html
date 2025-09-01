@@ -3,20 +3,80 @@
 <head>
     <title>Latest AI Papers</title>
 
+    <!-- Make layout responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Font Awesome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        h1 { color: #333; }
-        ul { list-style-type: none; padding-left: 0; }
-        li.paper { margin-bottom: 40px; }
-        li.feedback { margin-left: 20px; font-style: italic; color: #555; }
-        form { margin-top: 10px; }
-        input[type="text"] { margin-right: 10px; }
-        button { padding: 5px 10px; }
-        p.summary { font-style: italic; color: #666; margin: 8px 0 12px 0; max-width: 700px; }
-        .filter-form { margin-bottom: 20px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 5%; 
+            font-size: 1rem; /* base font size */
+        }
+        h1 { 
+            color: #333; 
+            font-size: 2rem; 
+        }
+        ul { 
+            list-style-type: none; 
+            padding-left: 0; 
+        }
+        li.paper { 
+            margin-bottom: 2.5rem; 
+        }
+        li.feedback { 
+            margin-left: 1rem; 
+            font-style: italic; 
+            color: #555; 
+        }
+        form { 
+            margin-top: 0.8rem; 
+        }
+        input[type="text"] { 
+            margin-right: 0.6rem; 
+            max-width: 90%; 
+        }
+        button { 
+            padding: 0.5rem 1rem; 
+        }
+        p.summary { 
+            font-style: italic; 
+            color: #666; 
+            margin: 0.5rem 0 1rem 0; 
+            max-width: 90%; 
+        }
+        .filter-form { 
+            margin-bottom: 1.2rem; 
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.95rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            input[type="text"], select, button {
+                display: block;
+                margin: 0.5rem 0;
+                width: 100%;
+            }
+            p.summary {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.9rem;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
