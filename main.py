@@ -5,10 +5,10 @@ import xml.etree.ElementTree as ET
 from datetime import timedelta, datetime
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, Security
 from fastapi.responses import RedirectResponse
-from fastapi_jwt_auth import AuthJWT
-from fastapi_jwt_auth.exceptions import AuthJWTException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import JWTError, jwt
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -26,6 +26,14 @@ DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'research_dashboard.db')}"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# ---------------------------------
+# JWT Settings
+# ---------------------------------
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_HOURS = 24
+security = HTTPBearer()
 
 # ---------------------------------
 # SQLAlchemy ORM Models
@@ -72,15 +80,19 @@ def get_db():
 
 
 # ---------------------------------
-# JWT Config
+# JWT Helpers
 # ---------------------------------
-class Settings(BaseModel):
-    authjwt_secret_key: str = os.environ.get("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
-    authjwt_access_token_expires: timedelta = timedelta(hours=24)
+def create_access_token(user_id: int) -> str:
+    expire = datetime.utcnow() + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+    return jwt.encode({"sub": str(user_id), "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
-@AuthJWT.load_config
-def get_config():
-    return Settings()
+
+def get_current_user_id(credentials: HTTPAuthorizationCredentials = Security(security)) -> int:
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        return int(payload["sub"])
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 # ---------------------------------
@@ -170,13 +182,11 @@ def get_papers(search: str = Query(default="")):
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if len(data.password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
-
     existing = db.query(User).filter(
         (User.username == data.username) | (User.email == data.email)
     ).first()
     if existing:
         raise HTTPException(status_code=409, detail="Username or email already exists")
-
     password_hash = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
     user = User(username=data.username, email=data.email, password_hash=password_hash)
     db.add(user)
@@ -186,12 +196,11 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @app.post("/api/auth/login")
-def login(data: LoginRequest, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == data.username).first()
     if not user or not bcrypt.checkpw(data.password.encode(), user.password_hash.encode()):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    access_token = Authorize.create_access_token(subject=str(user.id))
+    access_token = create_access_token(user.id)
     return {"access_token": access_token, "user_id": user.id}
 
 
@@ -215,8 +224,7 @@ def get_feedback(paper_id: str, db: Session = Depends(get_db)):
 
 @app.delete("/api/feedback/{feedback_id}")
 def delete_feedback(feedback_id: int, db: Session = Depends(get_db),
-                    Authorize: AuthJWT = Depends()):
-    Authorize.jwt_required()
+                    user_id: int = Depends(get_current_user_id)):
     fb = db.query(Feedback).filter(Feedback.id == feedback_id).first()
     if not fb:
         raise HTTPException(status_code=404, detail="Feedback not found")
@@ -227,9 +235,8 @@ def delete_feedback(feedback_id: int, db: Session = Depends(get_db),
 
 # --- Bookmarks ---
 @app.get("/api/bookmarks")
-def get_bookmarks(db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
-    Authorize.jwt_required()
-    user_id = int(Authorize.get_jwt_subject())
+def get_bookmarks(db: Session = Depends(get_db),
+                  user_id: int = Depends(get_current_user_id)):
     rows = db.query(Bookmark).filter(Bookmark.user_id == user_id).all()
     bookmarks = [{"id": r.id, "paper_id": r.paper_id, "title": r.title,
                   "saved_at": r.saved_at} for r in rows]
@@ -238,16 +245,12 @@ def get_bookmarks(db: Session = Depends(get_db), Authorize: AuthJWT = Depends())
 
 @app.post("/api/bookmarks", status_code=201)
 def add_bookmark(data: BookmarkRequest, db: Session = Depends(get_db),
-                 Authorize: AuthJWT = Depends()):
-    Authorize.jwt_required()
-    user_id = int(Authorize.get_jwt_subject())
-
+                 user_id: int = Depends(get_current_user_id)):
     existing = db.query(Bookmark).filter(
         Bookmark.user_id == user_id, Bookmark.paper_id == data.paper_id
     ).first()
     if existing:
         raise HTTPException(status_code=409, detail="Paper already bookmarked")
-
     bm = Bookmark(user_id=user_id, paper_id=data.paper_id, title=data.title)
     db.add(bm)
     db.commit()
@@ -257,9 +260,7 @@ def add_bookmark(data: BookmarkRequest, db: Session = Depends(get_db),
 
 @app.delete("/api/bookmarks/{bookmark_id}")
 def delete_bookmark(bookmark_id: int, db: Session = Depends(get_db),
-                    Authorize: AuthJWT = Depends()):
-    Authorize.jwt_required()
-    user_id = int(Authorize.get_jwt_subject())
+                    user_id: int = Depends(get_current_user_id)):
     bm = db.query(Bookmark).filter(
         Bookmark.id == bookmark_id, Bookmark.user_id == user_id
     ).first()
